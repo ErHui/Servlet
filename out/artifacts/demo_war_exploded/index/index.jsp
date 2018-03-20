@@ -14,11 +14,13 @@
 <body>
 <p>登录成功</p>
 <c:forEach items="${userList}" var="user">
+    <table style="border: 1px solid black">
     <tr>
         <td align="center">${user.id}</td>
         <td align="center">${user.user}</td>
         <td align="center">${user.pw}</td>
     </tr>
+    </table>
 </c:forEach>
 </body>
 </html>
