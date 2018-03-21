@@ -1,6 +1,7 @@
 package servlet;
 
 import dao.UserDao;
+import dao.impl.UserDaoImpl;
 import entity.User;
 import service.UserService;
 import service.impl.UserServiceImpl;
@@ -15,38 +16,56 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-@WebServlet(name = "UserServlet",urlPatterns ="/loginServlet" )
+@WebServlet(name = "UserServlet", urlPatterns = "/loginServlet")
 public class UserServlet extends HttpServlet {
+
+    private UserService userService = new UserServiceImpl();
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=utf-8");
         request.setCharacterEncoding("utf-8");
 
         String type = request.getParameter("type");
 
-        if(type.equals("login")){
-            login(request,response);
+        if (type.equals("login")) {
+            login(request, response);
+        } else if (type.equals("reg")) {
+            reg(request, response);
+        } else if (type.equals("del")) {
+            del(request, response);
+        } else if (type.equals("getAll")){
+            getAll(request, response);
         }
 
-        if(type.equals("reg")){
-            reg(request,response);
+    }
+
+    private void del(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        try {
+            userService.del(id);
+            request.getSession().setAttribute("msg","删除成功！");
+            request.getRequestDispatcher("index/index.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.getSession().setAttribute("msg","删除失败！");
+            request.getRequestDispatcher("index/index.jsp").forward(request, response);
         }
     }
 
-    private void login(HttpServletRequest request,HttpServletResponse response){
+    private void login(HttpServletRequest request, HttpServletResponse response) {
 
         String user = request.getParameter("user");
         String pw = request.getParameter("pw");
 
-        UserService userService = new UserServiceImpl();
 
-        boolean user_login = userService.login(user,pw);
+        boolean user_login = userService.login(user, pw);
 
-        if (user_login){
+        if (user_login) {
             try {
-                List<User> list = userService.getAll();
-                System.out.println(list);
-                request.getSession().setAttribute("userList",userService.getAll());
-                request.getRequestDispatcher("index/index.jsp").forward(request,response);
+//                List<User> list = userService.getAll();
+//                System.out.println(list);
+//                request.getSession().setAttribute("userList", userService.getAll());
+                request.getRequestDispatcher("index/index.jsp").forward(request, response);
             } catch (ServletException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -56,7 +75,7 @@ public class UserServlet extends HttpServlet {
 
     }
 
-    private void reg(HttpServletRequest request,HttpServletResponse response){
+    private void reg(HttpServletRequest request, HttpServletResponse response) {
 
         String user = request.getParameter("user");
         String pw = request.getParameter("pw");
@@ -64,20 +83,19 @@ public class UserServlet extends HttpServlet {
         System.out.println(user);
         System.out.println(pw);
 
-        UserService userService = new UserServiceImpl();
-        String rs = userService.reg(user,pw);
+        String rs = userService.reg(user, pw);
 
-        if (rs.equals(Base.registerSuccess)){
+        if (rs.equals(Base.registerSuccess)) {
             try {
-                request.getRequestDispatcher("index/login.html").forward(request,response);
+                request.getRequestDispatcher("index/login.html").forward(request, response);
             } catch (ServletException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }else if (rs.equals(Base.registerFalse) && rs.equals(Base.registerRepeated)){
+        } else if (rs.equals(Base.registerFalse) && rs.equals(Base.registerRepeated)) {
             try {
-                request.getRequestDispatcher("index/register.html").forward(request,response);
+                request.getRequestDispatcher("index/register.html").forward(request, response);
             } catch (ServletException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -87,12 +105,15 @@ public class UserServlet extends HttpServlet {
 
     }
 
-    private  void getAll(HttpServletRequest request,HttpServletResponse response){
-    UserService userService = new UserServiceImpl();
-    request.getSession().setAttribute("userList",userService.getAll());
-
-
-
+    private void getAll(HttpServletRequest request, HttpServletResponse response) {
+        request.getSession().setAttribute("userList", userService.getAll());
+        try {
+            request.getRequestDispatcher("index/index.jsp").forward(request,response);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

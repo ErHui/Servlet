@@ -18,8 +18,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User getUser(String user, String pw) {
         //获取数据库连接
-        ConnectionUtil connectionUtil = new ConnectionUtil();
-        Connection conn = connectionUtil.getConn();
+        Connection conn = getConn();
         //sql语句
         String sql = "select * from login where user = ? and pw = ?";
 
@@ -56,8 +55,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean login(String user, String pw) {
-       ConnectionUtil connectionUtil = new ConnectionUtil();
-       Connection conn = connectionUtil.getConn();
+        Connection conn = getConn();
 
        String sql = "select * from login where user=? and pw=?";
 
@@ -80,8 +78,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public String reg(String user, String pw) {
-        ConnectionUtil connectionUtil = new ConnectionUtil();
-        Connection conn = connectionUtil.getConn();
+        Connection conn = getConn();
 
         String sql1= "select * from login where user = ?";
         String sql = "insert into login(user,pw) values (?,?)";
@@ -114,8 +111,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<User> getAll() {
 
-        ConnectionUtil connectionUtil = new ConnectionUtil();
-        Connection conn = connectionUtil.getConn();
+        Connection conn = getConn();
 
         String sql = "select * from login";
         try {
@@ -136,11 +132,31 @@ public class UserDaoImpl implements UserDao {
         return null;
     }
 
+    private Connection getConn() {
+        ConnectionUtil connectionUtil = new ConnectionUtil();
+        return connectionUtil.getConn();
+    }
+
+    @Override
+    public void del(int id) {
+        //获取连接
+        Connection conn = getConn();
+        //sql语句
+        String sql = "delete from login where id = ?";
+        //ps
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void insertInfo(String user, String pw){
         //获取数据库连接
-        ConnectionUtil connectionUtil = new ConnectionUtil();
-        Connection conn = connectionUtil.getConn();
+        Connection conn = getConn();
         //sql语句
         String sql = "insert into login(user,pw) values (?,?)";
         //执行sql语句
@@ -157,8 +173,7 @@ public class UserDaoImpl implements UserDao {
 
     public void update(String user,String pw,int id){
         //获取连接
-        ConnectionUtil connectionUtil = new ConnectionUtil();
-        Connection conn = connectionUtil.getConn();
+        Connection conn = getConn();
         //sql语句
         String sql = "update login set user = ?,pw = ? where id = ?";
         //ps
@@ -176,8 +191,7 @@ public class UserDaoImpl implements UserDao {
     }
     public void delete(int id){
         //获取连接
-        ConnectionUtil connectionUtil1 = new ConnectionUtil();
-        Connection conn = connectionUtil1.getConn();
+        Connection conn = getConn();
         //sql语句
         String sql = "delete from login where id = ?";
         //ps

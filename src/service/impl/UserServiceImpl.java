@@ -8,22 +8,27 @@ import java.util.List;
 
 public class UserServiceImpl implements UserService{
 
+    private UserDaoImpl userDao = new UserDaoImpl();
+
     @Override
     public boolean login(String user, String pw) {
-        UserDaoImpl userDao = new UserDaoImpl();
+
         return userDao.login(user,pw);
     }
 
     @Override
     public String reg(String user, String pw) {
-        UserDaoImpl userDao = new UserDaoImpl();
         return userDao.reg(user,pw);
     }
 
     @Override
     public List<User>  getAll() {
-        UserDaoImpl userDao = new UserDaoImpl();
        return userDao. getAll();
+    }
+
+    @Override
+    public void del(int id) {
+        userDao.del(id);
     }
 
 }
